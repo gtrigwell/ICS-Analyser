@@ -1,1 +1,25 @@
- 
+ # Ignore PNG files
+*.png
+
+# Ignore JSON files
+*.json
+
+# Ignore common Python virtual environment and dependency files
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore VS Code settings
+.vscode/
+
+# Ignore build artifacts
+build/
+dist/
+*.egg-info/
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+.DS_Store

@@ -1,7 +1,2 @@
- 
 numpy
-pandas
 matplotlib
-pytest
-pylint
-jupyter
