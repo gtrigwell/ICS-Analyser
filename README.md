@@ -3,24 +3,6 @@ Vulnerability Scoring System Comparison
 * This tool compares the Common Vulnerability Scoring System (CVSS) v4.0 with the Industrial Vulnerability Scoring System (IVSS) using a set of sample industrial control system vulnerabilities.
 
 #######################################################################################
-Project Structure
-
-ivss-assessment/
-├── docs/                   # Documentation files
-├── src/                    # Source code
-│   ├── scoring/            # Scoring system implementations
-│   │   ├── cvss_calculator.py
-│   │   └── ivss_extension.py
-│   ├── utils/              # Utility modules
-│   │   ├── comparator.py
-│   │   └── visualiser.py
-│   ├── analysis/           # Analysis tools
-│   ├── discovery/          # Vulnerability discovery tools
-│   └── simulation/         # Simulation environment
-├── tests/                  # Test files
-└──  comparison_script.py   # Main comparison script
-
-#######################################################################################
 Usage
 
 Navigate to the test directory:
