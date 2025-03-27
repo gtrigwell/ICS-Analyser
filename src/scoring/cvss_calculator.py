@@ -514,9 +514,9 @@ class CVSSv4Calculator:
         # Look up score from MacroVector
         if macro_vector_key in self.MACROVECTOR_SCORES:
             score = self.MACROVECTOR_SCORES[macro_vector_key]
-            print(f"Debug - Score from lookup: {score}")
+            #print(f"Debug - Score from lookup: {score}")
         else:
-            print(f"Debug - Key {macro_vector_key} not found in lookup table")
+            #print(f"Debug - Key {macro_vector_key} not found in lookup table")
             # Fallback if key not found
             score = 5.0  # Default midpoint
 

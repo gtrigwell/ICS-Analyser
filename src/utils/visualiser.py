@@ -82,6 +82,7 @@ class VulnerabilityVisualisation:
         
         cvss_scores = [r['cvss']['score'] for r in self.comparator.results]
         ivss_scores = [r['ivss']['score'] for r in self.comparator.results]
+        ivss_scores = [min(s, 10.0) for s in ivss_scores]
         
         fig, ax = plt.subplots(figsize=(12, 8))
         
@@ -182,7 +183,7 @@ class VulnerabilityVisualisation:
         cbar = plt.colorbar(scatter, ax=ax, shrink=0.8)
         cbar.set_label('Score Difference', fontsize=10)
         
-        ax.plot([0, 10], [0, 10], color='gray', linestyle='--', alpha=0.5)
+        ax.plot([0, 11], [0, 11], color='gray', linestyle='--', alpha=0.5)
         
         ax.set_xlabel('CVSS Score', fontweight='bold')
         ax.set_ylabel('IVSS Score', fontweight='bold')
@@ -190,8 +191,8 @@ class VulnerabilityVisualisation:
         
         ax.grid(True, linestyle='--', linewidth=0.5, color='lightgray')
         ax.set_aspect('equal')
-        ax.set_xlim(0, 10)
-        ax.set_ylim(0, 10)
+        ax.set_xlim(0, 11)
+        ax.set_ylim(0, 11)
         
         threshold_style = {'linestyle': '--', 'color': 'gray', 'alpha': 0.5}
         ax.axhline(y=9.0, **threshold_style)
@@ -292,6 +293,7 @@ class VulnerabilityVisualisation:
         # Extract data
         cvss_scores = [r['cvss']['score'] for r in self.comparator.results]
         ivss_scores = [r['ivss']['score'] for r in self.comparator.results]
+        ivss_scores = [min(s, 10.0) for s in ivss_scores]
         
         # Plot
         bins = np.linspace(0, 10, 11)  # 0-10 range with 1-point bins
@@ -358,19 +360,18 @@ class VulnerabilityVisualisation:
             linewidths=0.5
         )
         
-        # Add colorbar and correlation line
         cbar = plt.colorbar(scatter, ax=ax)
         cbar.set_label('Score Difference', fontsize=10)
         
-        ax.plot([0, 10], [0, 10], color='gray', linestyle='--', alpha=0.5)
+        ax.plot([0, 11], [0, 11], color='gray', linestyle='--', alpha=0.5)
         
         ax.set_xlabel('CVSS Score', fontweight='bold')
         ax.set_ylabel('IVSS Score', fontweight='bold')
         ax.set_title('CVSS vs IVSS Correlation', fontweight='bold')
         
         ax.set_aspect('equal')
-        ax.set_xlim(0, 10)
-        ax.set_ylim(0, 10)
+        ax.set_xlim(0, 11)
+        ax.set_ylim(0, 11)
         
         ax.grid(True, linestyle='--', alpha=0.6)
         ax.axhline(y=9.0, linestyle='--', color='gray', alpha=0.5)

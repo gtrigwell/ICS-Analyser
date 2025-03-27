@@ -4,22 +4,24 @@
 # Ignore JSON files
 *.json
 
-# Ignore common Python virtual environment and dependency files
-venv/
+# Python virtual environment and dependency files
+.venv/
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-# Ignore VS Code settings
+# VS Code settings
 .vscode/
 
-# Ignore build artifacts
+# Build artifacts
 build/
 dist/
 *.egg-info/
 
-# Ignore logs and temporary files
+# Logs and temporary files
 *.log
 *.tmp
+
+# vEnv
 .DS_Store

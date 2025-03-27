@@ -1,13 +1,5 @@
-"""
-Industrial Vulnerability Scoring System
-
-This module implements the IVSS calculation system based on the specification
-provided by the ThreatGEN study. IVSS extends traditional vulnerability scoring
-with metrics specific to industrial control systems (ICS) environments.
-"""
-
 class IVSSCalculator:
-
+    # Constants remain the same as your original code
     # Base metrics
     REPORT_CONFIDENCE_UNCONFIRMED = 0.25
     REPORT_CONFIDENCE_UNCORROBORATED = 0.5
@@ -238,8 +230,9 @@ class IVSSCalculator:
         if av is None:
             raise ValueError("Threat Vector Required metric must be set")
             
-        # Formula: ((BS+BEX+(AV*2))/4)
-        score = (bs + bex + (av * 10 * 2)) / 4
+        # FIXED: Formula: ((BS+BEX+(AV*10*2))/4)
+        # Changed to: ((BS+BEX+(AV*2))/4)
+        score = (bs + bex + (av * 2)) / 4
         return score
 
     def calculate_local_accessibility(self):
@@ -291,9 +284,10 @@ class IVSSCalculator:
         if la is None:
             raise ValueError("Asset Access metric must be set")
         
-        # Formula: LA
-        self.scores['ADJACC'] = la
-        return la
+        # FIXED: Formula: LA
+        # Changed to: LA*10 to match formula
+        self.scores['ADJACC'] = la * 10
+        return la * 10
 
     def calculate_adjusted_criticality(self):
         """Calculate Adjusted Criticality (ADJIMP) score."""
@@ -316,238 +310,111 @@ class IVSSCalculator:
         adj_acc = self.calculate_adjusted_accessibility()
         
         # Debug intermediate values
-        print(f"\n---- IVSS Score Calculation Breakdown ----")
-        print(f"Base Severity (BS): {bs:.2f}")
+        #print(f"\n---- IVSS Score Calculation Breakdown ----")
+        #print(f"Base Severity (BS): {bs:.2f}")
         
         # Calculate Base Exploitability for debugging
         bex = self.calculate_base_exploitability_score()
-        print(f"Base Exploitability (BEX): {bex:.2f}")
+        #print(f"Base Exploitability (BEX): {bex:.2f}")
         
         # Calculate Base Accessibility for debugging
         av = self.metrics['AV']
         base_acc = av * 10 if av is not None else 0
-        print(f"Base Accessibility (AV*10): {base_acc:.2f}")
+        #print(f"Base Accessibility (AV*10): {base_acc:.2f}")
         
         # Calculate Total Base Score for debugging
-        total_base = (bs + bex + (base_acc * 2)) / 4 if av is not None else 0
-        print(f"Total Base Score: {total_base:.2f}")
+        total_base = (bs + bex + (av * 2)) / 4 if av is not None else 0
+        #print(f"Total Base Score: {total_base:.2f}")
         
         # Local environment parameters
         la = self.metrics['LA']
         cp = self.metrics['CP']
-        print(f"Asset Access (LA): {la:.2f}")
-        print(f"Network Segmentation (CP): {cp:.2f}")
+        #print(f"Asset Access (LA): {la:.2f}")
+        #print(f"Network Segmentation (CP): {cp:.2f}")
         
         # Local Accessibility
         local_acc = self.calculate_local_accessibility()
-        print(f"Local Accessibility (ACC = LA*CP*10): {local_acc:.2f}")
+        #print(f"Local Accessibility (ACC = LA*CP*10): {local_acc:.2f}")
         
         # Process consequences
         vi = self.metrics['VI']
         mi = self.metrics['MI']
         ci = self.metrics['CI']
-        print(f"Process Visibility (VI): {vi:.2f}")
-        print(f"Process Monitoring (MI): {mi:.2f}")
-        print(f"Process Control (CI): {ci:.2f}")
+        #print(f"Process Visibility (VI): {vi:.2f}")
+        #print(f"Process Monitoring (MI): {mi:.2f}")
+        #print(f"Process Control (CI): {ci:.2f}")
         
         # Consequences calculation
         con = self.calculate_consequences()
-        print(f"Consequences (CON = (VI+MI+CI*3)/5*10): {con:.2f}")
+        #print(f"Consequences (CON = (VI+MI+CI*3)/5*10): {con:.2f}")
         
         # Impact parameters
         pi = self.metrics['PI']
         ri = self.metrics['RI']
         si = self.metrics['SI']
         cd = self.metrics['CD']
-        print(f"Production Impact (PI): {pi:.2f}")
-        print(f"Reliability Impact (RI): {ri:.2f}")
-        print(f"Safety Impact (SI): {si:.2f}")
-        print(f"Financial Loss Impact (CD): {cd:.2f}")
+        #print(f"Production Impact (PI): {pi:.2f}")
+        #print(f"Reliability Impact (RI): {ri:.2f}")
+        #print(f"Safety Impact (SI): {si:.2f}")
+        #print(f"Financial Loss Impact (CD): {cd:.2f}")
         
         # Impact calculation
         imp = self.calculate_impact()
-        print(f"Impact (IMP = (CD*5*PI*2+RI+SI*6)/14*10): {imp:.2f}")
+        #print(f"Impact (IMP = (CD*5*PI*2+RI+SI*6)/14*10): {imp:.2f}")
         
         # Adjusted values
-        print(f"Adjusted Accessibility (ADJACC = LA): {adj_acc:.2f}")
-        print(f"Adjusted Criticality (ADJIMP = (CON+(IMP*2))/3): {adj_imp:.2f}")
+        #print(f"Adjusted Accessibility (ADJACC = LA*10): {adj_acc:.2f}")
+        #print(f"Adjusted Criticality (ADJIMP = (CON+(IMP*2))/3): {adj_imp:.2f}")
         
         # Final score calculation
         formula_components = f"({bs:.2f} + {adj_imp:.2f}*5 + {adj_acc:.2f}*10) / 16"
         numerator = bs + adj_imp * 5 + adj_acc * 10
-        print(f"Final Score Formula: {formula_components}")
-        print(f"Numerator: {numerator:.2f}")
-        print(f"Final Score: {numerator:.2f} / 16 = {numerator/16:.2f}")
+        #print(f"Final Score Formula: {formula_components}")
+        #print(f"Numerator: {numerator:.2f}")
+        #print(f"Final Score: {numerator:.2f} / 16 = {numerator/16:.2f}")
         
         # Original formula
         score = (bs + adj_imp * 5 + adj_acc * 10) / 16
         self.scores['FINAL'] = score
         return score
+
+    # Test the calculator with maximum values
+    def test_max_score():
+        calculator = IVSSCalculator()
         
-    def to_vector_string(self):
-        """Convert current metrics to IVSS vector string."""
-        parts = ["IVSS:1.0"]
+        # Set all metrics to maximum values
+        calculator.set_base_metrics(
+            rc=IVSSCalculator.REPORT_CONFIDENCE_CONFIRMED,
+            bc=IVSSCalculator.CONSEQUENCE_CONTROL,
+            rl=IVSSCalculator.REMEDIATION_LEVEL_UNAVAILABLE,
+            ec=IVSSCalculator.EXPLOIT_DIFFICULTY_LOW,
+            ex=IVSSCalculator.EXPLOIT_MATURITY_FUNCTIONAL,
+            au=IVSSCalculator.PRIVILEGE_LEVEL_NONE,
+            ui=IVSSCalculator.USER_INTERACTION_NO,
+            av=IVSSCalculator.THREAT_VECTOR_ADJACENT_REMOTE
+        )
         
-        # Add base metrics
-        for metric in ['RC', 'BC', 'RL', 'EC', 'EX', 'AU', 'UI', 'AV']:
-            if self.metrics[metric] is not None:
-                parts.append(f"{metric}:{self._get_metric_key(metric)}")
+        calculator.set_local_environment_metrics(
+            la=IVSSCalculator.ASSET_ACCESS_ADJACENT_REMOTE,
+            cp=IVSSCalculator.NETWORK_SEGMENTATION_NONE
+        )
         
-        # Add environmental metrics
-        for metric in ['LA', 'CP', 'VI', 'MI', 'CI', 'PI', 'RI', 'SI', 'CD']:
-            if self.metrics[metric] is not None:
-                parts.append(f"{metric}:{self._get_metric_key(metric)}")
+        calculator.set_process_consequence_metrics(
+            vi=IVSSCalculator.PROCESS_VISIBILITY_COMPLETE,
+            mi=IVSSCalculator.PROCESS_MONITORING_COMPLETE,
+            ci=IVSSCalculator.PROCESS_CONTROL_COMPLETE
+        )
         
-        return "/".join(parts)
+        calculator.set_impact_metrics(
+            pi=IVSSCalculator.SYSTEM_PRODUCTION_IMPACT_HIGH,
+            ri=IVSSCalculator.SYSTEM_RELIABILITY_IMPACT_HIGH,
+            si=IVSSCalculator.SYSTEM_SAFETY_IMPACT_HIGH,
+            cd=IVSSCalculator.FINANCIAL_LOSS_IMPACT_HIGH
+        )
         
-    def _get_metric_key(self, metric):
-        """Get key representation of a metric value."""
-        value = self.metrics[metric]
-        
-        # Comprehensive mappings from numerical values to key representations
-        mappings = {
-            # Report Confidence
-            'RC': {
-                self.REPORT_CONFIDENCE_UNCONFIRMED: 'U',
-                self.REPORT_CONFIDENCE_UNCORROBORATED: 'UC', 
-                self.REPORT_CONFIDENCE_CONFIRMED: 'C',
-                self.REPORT_CONFIDENCE_NOT_DEFINED: 'ND'
-            },
-            
-            # Consequence
-            'BC': {
-                self.CONSEQUENCE_TEMPORARY_DENIAL: 'TD',
-                self.CONSEQUENCE_DATA_MODIFICATION: 'DM',
-                self.CONSEQUENCE_SUSTAINED_DENIAL: 'SD',
-                self.CONSEQUENCE_CONTROL: 'C'
-            },
-            
-            # Remediation Level
-            'RL': {
-                self.REMEDIATION_LEVEL_OFFICIAL_FIX: 'OF',
-                self.REMEDIATION_LEVEL_WORKAROUND: 'W',
-                self.REMEDIATION_LEVEL_TEMPORARY_FIX: 'TF',
-                self.REMEDIATION_LEVEL_UNAVAILABLE: 'U',
-                self.REMEDIATION_LEVEL_NOT_DEFINED: 'ND'
-            },
-            
-            # Exploit Difficulty
-            'EC': {
-                self.EXPLOIT_DIFFICULTY_HIGH: 'H',
-                self.EXPLOIT_DIFFICULTY_MODERATE: 'M',
-                self.EXPLOIT_DIFFICULTY_LOW: 'L'
-            },
-            
-            # Exploit Maturity
-            'EX': {
-                self.EXPLOIT_MATURITY_UNPROVEN: 'U',
-                self.EXPLOIT_MATURITY_POC: 'POC',
-                self.EXPLOIT_MATURITY_FUNCTIONAL: 'F',
-                self.EXPLOIT_MATURITY_NOT_DEFINED: 'ND'
-            },
-            
-            # Privilege Level
-            'AU': {
-                self.PRIVILEGE_LEVEL_ADMIN_ROOT: 'AR',
-                self.PRIVILEGE_LEVEL_USER: 'U',
-                self.PRIVILEGE_LEVEL_NONE: 'N'
-            },
-            
-            # User Interaction
-            'UI': {
-                self.USER_INTERACTION_YES: 'Y',
-                self.USER_INTERACTION_NO: 'N'
-            },
-            
-            # Threat Vector
-            'AV': {
-                self.THREAT_VECTOR_LOCAL_HOST: 'LH',
-                self.THREAT_VECTOR_LOCAL_NETWORK: 'LN',
-                self.THREAT_VECTOR_ADJACENT_REMOTE: 'AR',
-                self.THREAT_VECTOR_UNDEFINED: 'U'
-            },
-            
-            # Asset Access
-            'LA': {
-                self.ASSET_ACCESS_LOCAL_HOST: 'LH',
-                self.ASSET_ACCESS_LOCAL_NETWORK: 'LN',
-                self.ASSET_ACCESS_ADJACENT_REMOTE: 'AR'
-            },
-            
-            # Network Segmentation
-            'CP': {
-                self.NETWORK_SEGMENTATION_COMPLIANT: 'C',
-                self.NETWORK_SEGMENTATION_PARTIAL: 'P',
-                self.NETWORK_SEGMENTATION_DMZ_ONLY: 'D',
-                self.NETWORK_SEGMENTATION_NONE: 'N'
-            },
-            
-            # Process Visibility
-            'VI': {
-                self.PROCESS_VISIBILITY_NONE: 'N',
-                self.PROCESS_VISIBILITY_PARTIAL: 'P',
-                self.PROCESS_VISIBILITY_COMPLETE: 'C'
-            },
-            
-            # Process Monitoring
-            'MI': {
-                self.PROCESS_MONITORING_NONE: 'N',
-                self.PROCESS_MONITORING_PARTIAL: 'P',
-                self.PROCESS_MONITORING_COMPLETE: 'C'
-            },
-            
-            # Process Control
-            'CI': {
-                self.PROCESS_CONTROL_NONE: 'N',
-                self.PROCESS_CONTROL_PARTIAL: 'P',
-                self.PROCESS_CONTROL_COMPLETE: 'C'
-            },
-            
-            # System Production Impact
-            'PI': {
-                self.SYSTEM_PRODUCTION_IMPACT_NONE: 'N',
-                self.SYSTEM_PRODUCTION_IMPACT_LOW: 'L',
-                self.SYSTEM_PRODUCTION_IMPACT_MEDIUM: 'M',
-                self.SYSTEM_PRODUCTION_IMPACT_HIGH: 'H',
-                self.SYSTEM_PRODUCTION_IMPACT_NOT_DEFINED: 'ND'
-            },
-            
-            # System Reliability Impact
-            'RI': {
-                self.SYSTEM_RELIABILITY_IMPACT_NONE: 'N',
-                self.SYSTEM_RELIABILITY_IMPACT_LOW: 'L',
-                self.SYSTEM_RELIABILITY_IMPACT_MEDIUM: 'M',
-                self.SYSTEM_RELIABILITY_IMPACT_HIGH: 'H',
-                self.SYSTEM_RELIABILITY_IMPACT_NOT_DEFINED: 'ND'
-            },
-            
-            # System Safety Impact
-            'SI': {
-                self.SYSTEM_SAFETY_IMPACT_NONE: 'N',
-                self.SYSTEM_SAFETY_IMPACT_LOW: 'L',
-                self.SYSTEM_SAFETY_IMPACT_MEDIUM: 'M',
-                self.SYSTEM_SAFETY_IMPACT_HIGH: 'H',
-                self.SYSTEM_SAFETY_IMPACT_NOT_DEFINED: 'ND'
-            },
-            
-            # Financial Loss Impact
-            'CD': {
-                self.FINANCIAL_LOSS_IMPACT_NONE: 'N',
-                self.FINANCIAL_LOSS_IMPACT_LOW: 'L',
-                self.FINANCIAL_LOSS_IMPACT_LOW_MEDIUM: 'LM',
-                self.FINANCIAL_LOSS_IMPACT_MEDIUM_HIGH: 'MH',
-                self.FINANCIAL_LOSS_IMPACT_HIGH: 'H',
-                self.FINANCIAL_LOSS_IMPACT_NOT_DEFINED: 'ND'
-            }
-        }
-        
-        # Check if metric has mapping and value exists
-        if metric in mappings and value in mappings[metric]:
-            return mappings[metric][value]
-        
-        # Return value as string if no specific mapping found
-        return str(value)
-        
+        # Calculate all scores
+        scores = calculator.calculate_all_scores()
+
     @classmethod
     def from_vector_string(cls, vector_string):
         """
@@ -739,50 +606,166 @@ class IVSSCalculator:
         except Exception as e:
             raise ValueError(f"Error parsing vector string: {e}")
 
-    def calculate_all_scores(self):
-        """Calculate all scores and return as dictionary."""
-        try:
-            print("\n==== CALCULATING ALL IVSS SCORES ====")
+    def to_vector_string(self):
+        """Convert current metrics to IVSS vector string."""
+        parts = ["IVSS:1.0"]
+        
+        # Add base metrics
+        for metric in ['RC', 'BC', 'RL', 'EC', 'EX', 'AU', 'UI', 'AV']:
+            if self.metrics[metric] is not None:
+                parts.append(f"{metric}:{self._get_metric_key(metric)}")
+        
+        # Add environmental metrics
+        for metric in ['LA', 'CP', 'VI', 'MI', 'CI', 'PI', 'RI', 'SI', 'CD']:
+            if self.metrics[metric] is not None:
+                parts.append(f"{metric}:{self._get_metric_key(metric)}")
+        
+        return "/".join(parts)
+        
+    def _get_metric_key(self, metric):
+        """Get key representation of a metric value."""
+        value = self.metrics[metric]
+        
+        # Comprehensive mappings from numerical values to key representations
+        mappings = {
+            # Report Confidence
+            'RC': {
+                self.REPORT_CONFIDENCE_UNCONFIRMED: 'U',
+                self.REPORT_CONFIDENCE_UNCORROBORATED: 'UC', 
+                self.REPORT_CONFIDENCE_CONFIRMED: 'C',
+                self.REPORT_CONFIDENCE_NOT_DEFINED: 'ND'
+            },
             
-            bs = self.calculate_base_severity_score()
-            print(f"Base Severity Score: {bs:.2f}")
+            # Consequence
+            'BC': {
+                self.CONSEQUENCE_TEMPORARY_DENIAL: 'TD',
+                self.CONSEQUENCE_DATA_MODIFICATION: 'DM',
+                self.CONSEQUENCE_SUSTAINED_DENIAL: 'SD',
+                self.CONSEQUENCE_CONTROL: 'C'
+            },
             
-            bex = self.calculate_base_exploitability_score()
-            print(f"Base Exploitability Score: {bex:.2f}")
+            # Remediation Level
+            'RL': {
+                self.REMEDIATION_LEVEL_OFFICIAL_FIX: 'OF',
+                self.REMEDIATION_LEVEL_WORKAROUND: 'W',
+                self.REMEDIATION_LEVEL_TEMPORARY_FIX: 'TF',
+                self.REMEDIATION_LEVEL_UNAVAILABLE: 'U',
+                self.REMEDIATION_LEVEL_NOT_DEFINED: 'ND'
+            },
             
-            total_base = self.calculate_total_base_score()
-            print(f"Total Base Score: {total_base:.2f}")
+            # Exploit Difficulty
+            'EC': {
+                self.EXPLOIT_DIFFICULTY_HIGH: 'H',
+                self.EXPLOIT_DIFFICULTY_MODERATE: 'M',
+                self.EXPLOIT_DIFFICULTY_LOW: 'L'
+            },
             
-            acc = self.calculate_local_accessibility()
-            print(f"Local Accessibility Score: {acc:.2f}")
+            # Exploit Maturity
+            'EX': {
+                self.EXPLOIT_MATURITY_UNPROVEN: 'U',
+                self.EXPLOIT_MATURITY_POC: 'POC',
+                self.EXPLOIT_MATURITY_FUNCTIONAL: 'F',
+                self.EXPLOIT_MATURITY_NOT_DEFINED: 'ND'
+            },
             
-            con = self.calculate_consequences()
-            print(f"Consequences Score: {con:.2f}")
+            # Privilege Level
+            'AU': {
+                self.PRIVILEGE_LEVEL_ADMIN_ROOT: 'AR',
+                self.PRIVILEGE_LEVEL_USER: 'U',
+                self.PRIVILEGE_LEVEL_NONE: 'N'
+            },
             
-            imp = self.calculate_impact()
-            print(f"Impact Score: {imp:.2f}")
+            # User Interaction
+            'UI': {
+                self.USER_INTERACTION_YES: 'Y',
+                self.USER_INTERACTION_NO: 'N'
+            },
             
-            adj_acc = self.calculate_adjusted_accessibility()
-            print(f"Adjusted Accessibility: {adj_acc:.2f}")
+            # Threat Vector
+            'AV': {
+                self.THREAT_VECTOR_LOCAL_HOST: 'LH',
+                self.THREAT_VECTOR_LOCAL_NETWORK: 'LN',
+                self.THREAT_VECTOR_ADJACENT_REMOTE: 'AR',
+                self.THREAT_VECTOR_UNDEFINED: 'U'
+            },
             
-            adj_imp = self.calculate_adjusted_criticality()
-            print(f"Adjusted Criticality: {adj_imp:.2f}")
+            # Asset Access
+            'LA': {
+                self.ASSET_ACCESS_LOCAL_HOST: 'LH',
+                self.ASSET_ACCESS_LOCAL_NETWORK: 'LN',
+                self.ASSET_ACCESS_ADJACENT_REMOTE: 'AR'
+            },
             
-            final = self.calculate_final_score()
-            print(f"Final IVSS Score: {final:.2f}")
-            print("==== END CALCULATION ====\n")
+            # Network Segmentation
+            'CP': {
+                self.NETWORK_SEGMENTATION_COMPLIANT: 'C',
+                self.NETWORK_SEGMENTATION_PARTIAL: 'P',
+                self.NETWORK_SEGMENTATION_DMZ_ONLY: 'D',
+                self.NETWORK_SEGMENTATION_NONE: 'N'
+            },
             
-            return {
-                'base_severity': bs,
-                'base_exploitability': bex,
-                'total_base': total_base,
-                'local_accessibility': acc,
-                'consequences': con,
-                'impact': imp,
-                'adjusted_accessibility': adj_acc,
-                'adjusted_criticality': adj_imp,
-                'final_score': final
+            # Process Visibility
+            'VI': {
+                self.PROCESS_VISIBILITY_NONE: 'N',
+                self.PROCESS_VISIBILITY_PARTIAL: 'P',
+                self.PROCESS_VISIBILITY_COMPLETE: 'C'
+            },
+            
+            # Process Monitoring
+            'MI': {
+                self.PROCESS_MONITORING_NONE: 'N',
+                self.PROCESS_MONITORING_PARTIAL: 'P',
+                self.PROCESS_MONITORING_COMPLETE: 'C'
+            },
+            
+            # Process Control
+            'CI': {
+                self.PROCESS_CONTROL_NONE: 'N',
+                self.PROCESS_CONTROL_PARTIAL: 'P',
+                self.PROCESS_CONTROL_COMPLETE: 'C'
+            },
+            
+            # System Production Impact
+            'PI': {
+                self.SYSTEM_PRODUCTION_IMPACT_NONE: 'N',
+                self.SYSTEM_PRODUCTION_IMPACT_LOW: 'L',
+                self.SYSTEM_PRODUCTION_IMPACT_MEDIUM: 'M',
+                self.SYSTEM_PRODUCTION_IMPACT_HIGH: 'H',
+                self.SYSTEM_PRODUCTION_IMPACT_NOT_DEFINED: 'ND'
+            },
+            
+            # System Reliability Impact
+            'RI': {
+                self.SYSTEM_RELIABILITY_IMPACT_NONE: 'N',
+                self.SYSTEM_RELIABILITY_IMPACT_LOW: 'L',
+                self.SYSTEM_RELIABILITY_IMPACT_MEDIUM: 'M',
+                self.SYSTEM_RELIABILITY_IMPACT_HIGH: 'H',
+                self.SYSTEM_RELIABILITY_IMPACT_NOT_DEFINED: 'ND'
+            },
+            
+            # System Safety Impact
+            'SI': {
+                self.SYSTEM_SAFETY_IMPACT_NONE: 'N',
+                self.SYSTEM_SAFETY_IMPACT_LOW: 'L',
+                self.SYSTEM_SAFETY_IMPACT_MEDIUM: 'M',
+                self.SYSTEM_SAFETY_IMPACT_HIGH: 'H',
+                self.SYSTEM_SAFETY_IMPACT_NOT_DEFINED: 'ND'
+            },
+            
+            # Financial Loss Impact
+            'CD': {
+                self.FINANCIAL_LOSS_IMPACT_NONE: 'N',
+                self.FINANCIAL_LOSS_IMPACT_LOW: 'L',
+                self.FINANCIAL_LOSS_IMPACT_LOW_MEDIUM: 'LM',
+                self.FINANCIAL_LOSS_IMPACT_MEDIUM_HIGH: 'MH',
+                self.FINANCIAL_LOSS_IMPACT_HIGH: 'H',
+                self.FINANCIAL_LOSS_IMPACT_NOT_DEFINED: 'ND'
             }
-        except ValueError as e:
-            print(f"Error calculating scores: {e}")
-            return {'error': str(e)}
+        }
+        
+        # Check if metric has mapping and value exists
+        if metric in mappings and value in mappings[metric]:
+            return mappings[metric][value]
+        
+        # Return value as string if no specific mapping found
+        return str(value)
