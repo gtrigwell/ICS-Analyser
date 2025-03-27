@@ -2,7 +2,7 @@ Vulnerability Scoring System Comparison
 
 * This tool compares the Common Vulnerability Scoring System (CVSS) v4.0 with the Industrial Vulnerability Scoring System (IVSS) using a set of sample industrial control system vulnerabilities.
 
-#######################################################################################################################################################################
+#######################################################################################
 Project Structure
 
 ivss-assessment/
@@ -20,7 +20,7 @@ ivss-assessment/
 ├── tests/                  # Test files
 └──  comparison_script.py   # Main comparison script
 
-#######################################################################################################################################################################
+#######################################################################################
 Usage
 
 Navigate to the test directory:
@@ -38,7 +38,7 @@ This will:
 * Create visualisation charts
 * Display the results dashboard
 
-#######################################################################################################################################################################
+#######################################################################################
 Sample Vulnerabilities
 
 The script includes these representative industrial control system scenarios:
@@ -52,7 +52,7 @@ The script includes these representative industrial control system scenarios:
 * ICS-007: Engineering Workstation Credential Theft
 * MAX-TEST: Maximum severity test case
 
-#######################################################################################################################################################################
+#######################################################################################
 Output
 
 The script generates several visualisation files:
@@ -65,7 +65,7 @@ The script generates several visualisation files:
 
 It also exports complete results to vulnerability_comparison_results.json.
 
-#######################################################################################################################################################################
+#######################################################################################
 Requirements
 
 The tool requires Python 3.10.11 with the following packages:
