@@ -1,4 +1,4 @@
-Vulnerability Scoring System Comparison
+Vulnerability Scoring System Comparison - Initial Prototype (Full implementation pending publication clearance)
 
 * This tool compares the Common Vulnerability Scoring System (CVSS) v4.0 with the Industrial Vulnerability Scoring System (IVSS) using a set of sample industrial control system vulnerabilities.
 
